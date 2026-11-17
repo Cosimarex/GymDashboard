@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NourishMove for Gyms</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b1118; --card: #111a24; --card2: #152131; --line: rgba(255,255,255,0.08); --text: #eef3f8; --dim: #9fb0c2; --faint: #6f8396;
+    --accent: #3dffa0; --on-accent: #062b18; --coral: #ff7a59; --yellow: #f5c84b; --red: #ff5a5a; --blue: #6ab7ff;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 14px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: var(--accent); }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 20px 16px 60px; }
+  .muted { color: var(--dim); } .faint { color: var(--faint); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  h1 { font-size: 22px; margin: 0; } h2 { font-size: 16px; margin: 0 0 12px; } h3 { font-size: 14px; margin: 0 0 8px; }
+  .btn { border: 1px solid var(--line); background: rgba(255,255,255,0.06); border-radius: 12px; padding: 9px 14px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+  .btn:hover { background: rgba(255,255,255,0.1); }
+  .btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .btn.primary:hover { filter: brightness(1.05); }
+  .btn.danger { color: var(--red); border-color: rgba(255,90,90,0.35); background: rgba(255,90,90,0.08); }
+  .btn.small { padding: 5px 10px; font-size: 12.5px; border-radius: 10px; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  input, select, textarea { background: var(--card2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  label { display: block; color: var(--dim); font-size: 12px; font-weight: 600; margin: 0 0 6px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+  .row > * { flex: 1 1 200px; }
+  .grid { display: grid; gap: 12px; }
+  .stats { grid-template-columns: repeat(5, 1fr); }
+  .stat b { display: block; font-size: 26px; margin-top: 4px; }
+  .stat span { color: var(--dim); font-size: 12px; font-weight: 600; }
+  .top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .top .grow { flex: 1; min-width: 200px; }
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700; }
+  .badge.green { background: rgba(61,255,160,0.12); color: var(--accent); }
+  .badge.blue { background: rgba(106,183,255,0.14); color: var(--blue); }
+  .badge.yellow { background: rgba(245,200,75,0.14); color: var(--yellow); }
+  .badge.grey { background: rgba(255,255,255,0.07); color: var(--dim); }
+  .tabs { display: flex; gap: 6px; margin: 18px 0 12px; }
+  .tab { padding: 9px 16px; border-radius: 12px; cursor: pointer; font-weight: 700; color: var(--dim); border: 1px solid transparent; background: none; }
+  .tab.on { background: rgba(61,255,160,0.1); color: var(--accent); border-color: rgba(61,255,160,0.3); }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; color: var(--faint); font-size: 11.5px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  td select { padding: 6px 8px; font-size: 13px; min-width: 150px; }
+  .tablewrap { overflow-x: auto; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .toolbar input { flex: 1 1 220px; } .toolbar select { flex: 0 1 200px; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--card2); border: 1px solid var(--line); padding: 12px 16px; border-radius: 14px; max-width: 92vw; z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  .toast.err { border-color: var(--red); }
+  .login { max-width: 400px; margin: 9vh auto 0; }
+  .logo { font-weight: 800; font-size: 20px; letter-spacing: -.3px; } .logo i { font-style: normal; color: var(--accent); }
+  .hidden { display: none !important; }
+  .result { margin-top: 10px; font-size: 13px; line-height: 1.6; }
+  .empty { padding: 26px; text-align: center; color: var(--faint); }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 9; }
+  .modal .card { width: 100%; max-width: 440px; }
+  .num { font-variant-numeric: tabular-nums; }
+  @media (max-width: 860px) { .stats { grid-template-columns: repeat(2, 1fr); } .stats .stat:last-child { grid-column: span 2; } }
+  @media (max-width: 560px) { .hide-sm { display: none; } td, th { padding: 8px 6px; } }
+</style>
+</head>
+<body>
+
+<!-- Sign in -->
+<div id="login" class="wrap hidden">
+  <div class="login card">
+    <div class="logo">Nourish<i>Move</i> <span class="faint" style="font-weight:600;font-size:14px;">for Gyms</span></div>
+    <p class="muted" style="margin:8px 0 18px;">Manage your members and trainers, and see who's active in the app.</p>
+    <form id="login-form" class="grid">
+      <div><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div>
+      <div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
+      <button class="btn primary" type="submit" id="login-btn">Sign in</button>
+      <p class="faint" style="margin:0;font-size:12.5px;">No login yet? Ask your NourishMove contact to set up your gym.</p>
+    </form>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="app" class="wrap hidden">
+  <div class="top">
+    <div class="grow">
+      <div class="logo" style="font-size:14px;">Nourish<i>Move</i> <span class="faint">for Gyms</span></div>
+      <h1 id="gym-name">Gym</h1>
+      <div id="gym-plan" style="margin-top:6px;"></div>
+    </div>
+    <button class="btn" id="refresh">↻ Refresh</button>
+    <button class="btn" id="open-password">Change password</button>
+    <button class="btn" id="logout">Sign out</button>
+  </div>
+
+  <div class="grid stats" id="stats"></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" data-tab="members" role="tab">Members</button>
+    <button class="tab" data-tab="trainers" role="tab">Trainers</button>
+    <button class="tab" data-tab="invite" role="tab">Invite message</button>
+  </div>
+
+  <!-- Members -->
+  <section id="tab-members">
+    <div class="card" style="margin-bottom:12px;">
+      <h2>Add members</h2>
+      <div class="row">
+        <div style="flex:2 1 320px;"><label for="m-people">Phone numbers, one per line (optionally followed by a comma and a name)</label>
+          <textarea id="m-people" rows="3" placeholder="98765 43210, Riya Shah&#10;+91 91234 56789"></textarea></div>
+        <div><label for="m-trainer">Trainer (optional)</label><select id="m-trainer"></select></div>
+        <div style="flex:0 0 auto;"><button class="btn primary" id="m-add">Add members</button></div>
+      </div>
+      <div class="result" id="m-result"></div>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <input id="m-search" placeholder="Search name or phone">
+        <select id="m-filter">
+          <option value="all">All members</option>
+          <option value="notjoined">Not in the app yet</option>
+          <option value="notrainer">No trainer</option>
+          <option value="inactive">Joined, not active this week</option>
+        </select>
+        <button class="btn" id="m-export">⬇ Export CSV</button>
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Member</th><th class="hide-sm">Phone</th><th>Status</th><th>Trainer</th><th class="hide-sm">Last logged</th><th class="hide-sm">Days active (7)</th><th></th></tr></thead>
+        <tbody id="m-rows"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- Trainers -->
+  <section id="tab-trainers" class="hidden">
+    <div class="card" style="margin-bottom:12px;">
+      <h2>Add trainers</h2>
+      <p class="muted" style="margin:0 0 10px;">Trainers use the same NourishMove app. Once added, they get a <b>Clients</b> tab showing the meals, workouts and weight of the members you assign to them.</p>
+      <div class="row">
+        <div style="flex:2 1 320px;"><label for="t-people">Phone numbers, one per line (optionally followed by a comma and a name)</label>
+          <textarea id="t-people" rows="2" placeholder="98765 43210, Arjun"></textarea></div>
+        <div style="flex:0 0 auto;"><button class="btn primary" id="t-add">Add trainers</button></div>
+      </div>
+      <div class="result" id="t-result"></div>
+    </div>
+    <div class="card">
+      <div class="tablewrap"><table>
+        <thead><tr><th>Trainer</th><th class="hide-sm">Phone</th><th>Status</th><th>Clients</th><th></th></tr></thead>
+        <tbody id="t-rows"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- Invite -->
+  <section id="tab-invite" class="hidden">
+    <div class="card">
+      <h2>Invite message</h2>
+      <p class="muted" style="margin:0 0 12px;">Send this to members and trainers who aren't in the app yet (WhatsApp works well). They must sign in with the <b>same phone number</b> you added, and their gym is linked automatically.</p>
+      <textarea id="invite-text" rows="6"></textarea>
+      <div class="row" style="margin-top:10px;">
+        <div style="flex:0 0 auto;"><button class="btn primary" id="copy-invite">Copy message</button></div>
+        <div class="faint" id="not-joined-count" style="flex:1 1 auto;align-self:center;"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Change password -->
+<div class="modal hidden" id="pw-modal">
+  <form class="card grid" id="pw-form">
+    <h2 style="margin:0;">Change password</h2>
+    <div><label for="pw-current">Current password</label><input id="pw-current" type="password" autocomplete="current-password" required></div>
+    <div><label for="pw-new">New password (8+ characters)</label><input id="pw-new" type="password" autocomplete="new-password" minlength="8" required></div>
+    <div class="row"><button type="button" class="btn" id="pw-cancel">Cancel</button><button type="submit" class="btn primary">Save</button></div>
+  </form>
+</div>
+
+<div id="toast" class="toast hidden" role="status"></div>
+
+<script>
+const API = "https://macrokitchen-backend.onrender.com";
+const TOKEN_KEY = "nm_gym_token";
+const $ = (s) => document.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const store = {
+  get() { try { return localStorage.getItem(TOKEN_KEY); } catch { return null; } },
+  set(v) { try { v ? localStorage.setItem(TOKEN_KEY, v) : localStorage.removeItem(TOKEN_KEY); } catch {} },
+};
+let token = store.get();
+let data = null;
+let tab = "members";
+
+function toast(msg, err) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.className = "toast" + (err ? " err" : "");
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.classList.add("hidden"), 4200);
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, {
+    method: opts.method || "GET",
+    headers: { "Content-Type": "application/json", ...(token ? { Authorization: "Bearer " + token } : {}) },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  let body = {};
+  try { body = await res.json(); } catch {}
+  if (res.status === 401 && path !== "/gym/auth/login") { signOut(); throw new Error(body.detail || "Please sign in again."); }
+  if (!res.ok) throw new Error(typeof body.detail === "string" ? body.detail : "Something went wrong. Try again.");
+  return body;
+}
+
+function show(which) {
+  $("#login").classList.toggle("hidden", which !== "login");
+  $("#app").classList.toggle("hidden", which !== "app");
+}
+function signOut() { token = null; store.set(null); data = null; show("login"); }
+
+$("#login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = $("#login-btn");
+  btn.disabled = true; btn.textContent = "Signing in…";
+  try {
+    const r = await api("/gym/auth/login", { method: "POST", body: { email: $("#email").value, password: $("#password").value } });
+    token = r.token; store.set(token); $("#password").value = "";
+    await load();
+  } catch (err) { toast(err.message, true); }
+  finally { btn.disabled = false; btn.textContent = "Sign in"; }
+});
+$("#logout").onclick = signOut;
+$("#refresh").onclick = () => load().then(() => toast("Up to date"));
+
+async function load() {
+  try {
+    data = await api("/gym/overview");
+    show("app");
+    render();
+  } catch (err) {
+    if (token) toast(err.message, true);
+    else show("login");
+  }
+}
+
+const fmtDate = (d) => {
+  if (!d) return "—";
+  const days = Math.round((new Date(new Date().toDateString()) - new Date(d + "T00:00:00")) / 86400000);
+  return days <= 0 ? "Today" : days === 1 ? "Yesterday" : days < 7 ? `${days} days ago` : new Date(d + "T00:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short" });
+};
+const phonePretty = (p) => p.length >= 12 ? `${p.slice(0, -10)} ${p.slice(-10, -5)} ${p.slice(-5)}` : p;
+const status = (r) => r.joined ? '<span class="badge green">In the app</span>' : '<span class="badge yellow">Not joined</span>';
+
+function render() {
+  const g = data.gym, c = data.counts;
+  document.title = `${g.name} · NourishMove for Gyms`;
+  $("#gym-name").textContent = g.name + (g.city ? ` · ${g.city}` : "");
+  $("#gym-plan").innerHTML = g.plan === "included"
+    ? `<span class="badge green">Premium included for your members</span>${g.seats ? ` <span class="badge grey">${c.members}/${g.seats} seats</span>` : ""}`
+    : `<span class="badge blue">Members get ${g.discount_pct}% off Premium</span>${g.offer_note ? ` <span class="faint">${esc(g.offer_note)}</span>` : ""}`;
+  const stat = (label, value, hint) => `<div class="card stat"><span>${label}</span><b class="num">${value}</b>${hint ? `<div class="faint" style="font-size:12px;">${hint}</div>` : ""}</div>`;
+  $("#stats").innerHTML = [
+    stat("Members", c.members),
+    stat("In the app", c.joined, c.members ? `${Math.round((c.joined / c.members) * 100)}% joined` : ""),
+    stat("Active this week", c.active_7d, c.joined ? `${Math.round((c.active_7d / c.joined) * 100)}% of joined` : ""),
+    stat("Trainers", c.trainers),
+    stat("Without a trainer", c.unassigned),
+  ].join("");
+  const trainers = data.rows.filter((r) => r.role === "trainer");
+  const opts = `<option value="">No trainer</option>` + trainers.map((t) => `<option value="${esc(t.id)}">${esc(t.name || phonePretty(t.phone))}</option>`).join("");
+  $("#m-trainer").innerHTML = opts;
+  renderMembers(opts);
+  renderTrainers();
+  renderInvite();
+}
+
+function renderMembers(opts) {
+  const q = $("#m-search").value.trim().toLowerCase();
+  const f = $("#m-filter").value;
+  const rows = data.rows.filter((r) => r.role === "member")
+    .filter((r) => !q || (r.name || "").toLowerCase().includes(q) || r.phone.includes(q.replace(/\D/g, "") || "§"))
+    .filter((r) => f === "all" || (f === "notjoined" && !r.joined) || (f === "notrainer" && !r.trainer_id) || (f === "inactive" && r.joined && !r.days_7));
+  $("#m-rows").innerHTML = rows.length ? rows.map((r) => `
+    <tr>
+      <td><b>${esc(r.name || "—")}</b>${r.username ? `<div class="faint" style="font-size:12px;">@${esc(r.username)}</div>` : ""}</td>
+      <td class="hide-sm num">${esc(phonePretty(r.phone))}</td>
+      <td>${status(r)}</td>
+      <td><select data-assign="${esc(r.id)}" aria-label="Trainer for ${esc(r.name || r.phone)}">${opts.replace(`value="${esc(r.trainer_id || "")}"`, `value="${esc(r.trainer_id || "")}" selected`)}</select></td>
+      <td class="hide-sm">${r.joined ? fmtDate(r.last_logged) : "—"}</td>
+      <td class="hide-sm num">${r.joined ? `${r.days_7}/7` : "—"}</td>
+      <td style="text-align:right;"><button class="btn small danger" data-remove="${esc(r.id)}" data-name="${esc(r.name || phonePretty(r.phone))}">Remove</button></td>
+    </tr>`).join("") : `<tr><td colspan="7" class="empty">${data.counts.members ? "No members match." : "No members yet. Add their phone numbers above."}</td></tr>`;
+}
+
+function renderTrainers() {
+  const rows = data.rows.filter((r) => r.role === "trainer");
+  $("#t-rows").innerHTML = rows.length ? rows.map((r) => `
+    <tr>
+      <td><b>${esc(r.name || "—")}</b>${r.username ? `<div class="faint" style="font-size:12px;">@${esc(r.username)}</div>` : ""}</td>
+      <td class="hide-sm num">${esc(phonePretty(r.phone))}</td>
+      <td>${status(r)}</td>
+      <td class="num">${r.clients}</td>
+      <td style="text-align:right;"><button class="btn small danger" data-remove="${esc(r.id)}" data-name="${esc(r.name || phonePretty(r.phone))}" data-trainer="1">Remove</button></td>
+    </tr>`).join("") : `<tr><td colspan="5" class="empty">No trainers yet.</td></tr>`;
+}
+
+function renderInvite() {
+  const box = $("#invite-text");
+  if (!box.dataset.edited) {
+    box.value = `Hi! ${data.gym.name} has set you up on NourishMove${data.gym.plan === "included" ? " (Premium is included with your membership)" : data.gym.discount_pct ? ` (members get ${data.gym.discount_pct}% off Premium)` : ""}: AI meal tracking, workouts and a coach in one app.\n\n1. Install it: ${data.invite_link || "[app link]"}\n2. Sign up with THIS phone number, and your gym is linked automatically.`;
+  }
+  const n = data.rows.filter((r) => !r.joined).length;
+  $("#not-joined-count").textContent = n ? `${n} ${n === 1 ? "person hasn't" : "people haven't"} joined yet (filter Members by “Not in the app yet”).` : "Everyone you added is in the app 🎉";
+}
+$("#invite-text").addEventListener("input", (e) => (e.target.dataset.edited = "1"));
+$("#copy-invite").onclick = async () => {
+  try { await navigator.clipboard.writeText($("#invite-text").value); toast("Copied. Paste it into WhatsApp or SMS."); }
+  catch { $("#invite-text").select(); toast("Select the text and copy it.", true); }
+};
+
+function parsePeople(text) {
+  return text.split(/\n+/).map((l) => l.trim()).filter(Boolean).map((l) => {
+    const [phone, ...name] = l.split(",");
+    return { phone: phone.trim(), name: name.join(",").trim() };
+  });
+}
+function summary(r, role) {
+  const parts = [];
+  if (r.added) parts.push(`<b style="color:var(--accent)">✓ Added ${r.added} ${role}${r.added === 1 ? "" : "s"}.</b>`);
+  if (r.already_here.length) parts.push(`Already in your gym: ${r.already_here.map(phonePretty).join(", ")}`);
+  if (r.in_another_gym.length) parts.push(`<span style="color:var(--yellow)">Already linked to another gym: ${r.in_another_gym.map(phonePretty).join(", ")}</span>`);
+  if (r.invalid.length) parts.push(`<span style="color:var(--red)">Not a phone number: ${r.invalid.map(esc).join(", ")}</span>`);
+  if (r.over_seat_limit.length) parts.push(`<span style="color:var(--red)">Over your seat limit, not added: ${r.over_seat_limit.map(phonePretty).join(", ")}</span>`);
+  return parts.join("<br>") || "Nothing to add.";
+}
+async function addPeople(role, input, result, btn, trainerId) {
+  const people = parsePeople($(input).value);
+  if (!people.length) return toast("Enter at least one phone number.", true);
+  $(btn).disabled = true;
+  try {
+    const r = await api("/gym/roster", { method: "POST", body: { role, people, trainer_id: trainerId || null } });
+    $(result).innerHTML = summary(r, role);
+    if (r.added) $(input).value = "";
+    await load();
+  } catch (err) { toast(err.message, true); }
+  finally { $(btn).disabled = false; }
+}
+$("#m-add").onclick = () => addPeople("member", "#m-people", "#m-result", "#m-add", $("#m-trainer").value);
+$("#t-add").onclick = () => addPeople("trainer", "#t-people", "#t-result", "#t-add");
+
+document.addEventListener("change", async (e) => {
+  const id = e.target.dataset.assign;
+  if (!id) return;
+  try {
+    await api(`/gym/roster/${encodeURIComponent(id)}`, { method: "PATCH", body: { trainer_id: e.target.value } });
+    toast(e.target.value ? "Trainer assigned" : "Trainer removed");
+    await load();
+  } catch (err) { toast(err.message, true); load(); }
+});
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-remove]");
+  if (!b) return;
+  const msg = b.dataset.trainer
+    ? `Remove trainer ${b.dataset.name}? Their clients will have no trainer until you assign a new one.`
+    : `Remove ${b.dataset.name} from your gym?${data.gym.plan === "included" ? " Their included Premium ends." : ""}`;
+  if (!confirm(msg)) return;
+  try { await api(`/gym/roster/${encodeURIComponent(b.dataset.remove)}`, { method: "DELETE" }); toast("Removed"); await load(); }
+  catch (err) { toast(err.message, true); }
+});
+$("#m-search").addEventListener("input", () => data && render());
+$("#m-filter").addEventListener("change", () => data && render());
+
+$("#m-export").onclick = () => {
+  const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const lines = [["Name", "Phone", "Username", "In the app", "Trainer", "Last logged", "Days active (7)", "Added"].map(cell).join(",")];
+  data.rows.filter((r) => r.role === "member").forEach((r) =>
+    lines.push([r.name, r.phone, r.username, r.joined ? "yes" : "no", r.trainer_name, r.last_logged, r.days_7, (r.added_at || "").slice(0, 10)].map(cell).join(",")));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/csv" }));
+  a.download = `${data.gym.id}-members.csv`;
+  a.click();
+};
+
+document.querySelectorAll(".tab").forEach((t) => (t.onclick = () => {
+  tab = t.dataset.tab;
+  document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x === t));
+  ["members", "trainers", "invite"].forEach((n) => $("#tab-" + n).classList.toggle("hidden", n !== tab));
+}));
+
+$("#open-password").onclick = () => $("#pw-modal").classList.remove("hidden");
+$("#pw-cancel").onclick = () => $("#pw-modal").classList.add("hidden");
+$("#pw-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    await api("/gym/password", { method: "POST", body: { current: $("#pw-current").value, new: $("#pw-new").value } });
+    $("#pw-modal").classList.add("hidden"); $("#pw-form").reset(); toast("Password changed");
+  } catch (err) { toast(err.message, true); }
+});
+
+if (token) load(); else show("login");
+</script>
+</body>
+</html>
